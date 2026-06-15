@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekomendasi Racun Shopee</title>
+    <style>
+        /* --- CSS UNTUK TAMPILAN (DESAIN) --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Background seluruh halaman berwarna Biru Soft */
+        body {
+            background-color: #cce0ff; 
+            color: #333;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px; /* Ukuran standar layar HP */
+            background-color: #ffffff;
+            min-height: 100vh;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        /* Menggunakan file background.jpg Anda dari folder pict */
+        .header-banner-bg {
+            width: 100%;
+            padding: 25px 20px;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url('pict/background.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Layout kolom untuk Logo Horizontal */
+        .profile-section {
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            gap: 12px;
+            /* Jarak pas ke kolom pencarian di bawahnya */
+            margin-bottom: 20px; 
+        }
+
+        /* Sudut gambar logo melengkung cantik */
+        .logo-horizontal {
+            width: 100%;
+            max-width: 250px; /* Batas lebar maksimal logo agar tidak terlalu besar */
+            height: auto;
+            object-fit: contain;
+            border-radius: 12px; /* Membuat sudut melengkung halus */
+        }
+
+        /* Teks panduan diposisikan di tengah bawah logo horizontal */
+        .profile-text {
+            text-align: center;
+        }
+
+        .profile-text h2 {
+            font-size: 15px;
+            color: #ffffff;
+            font-weight: bold;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+            margin-bottom: 4px;
+        }
+
+        .profile-text p {
+            font-size: 11px;
+            color: #ffffff;
+            line-height: 1.4;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        /* Kolom Pencarian */
+        .search-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            transition: 0.3s;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Grid Produk */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .product-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .product-card:hover {
+            transform: scale(1.02);
+        }
+
+        .product-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #444;
+            background-color: #fafafa;
+            border-top: 1px solid #eee;
+        }
+
+        .no-results {
+            grid-column: span 2;
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-banner-bg">
+            <div class="profile-section">
+                <img src="pict/logo.jpg" alt="Logo" class="logo-horizontal">
+                
+                <div class="profile-text">
+                    <h2>CARI NOMOR NYA DI PENCARIAN ⬆️</h2>
+                    <p>caranya : klik cari link - ketik nomor - enter - klik barang yang mau dibeli</p>
+                </div>
+            </div>
+
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Cari Kode Link (Contoh: 6289)..." onkeyup="searchProduct()">
+            </div>
+        </div>
+
+        <div class="product-grid" id="productGrid">
+        </div>
+    </div>
+
+    <script>
+        // Data Produk Affiliate Anda
+        const products = [
+            {
+                kode: "6289",
+                foto: "pict/baju01.jpg", // PERBAIKAN: Foto sudah diubah ke file lokal Anda
+                linkShopee: "https://s.shopee.co.id/7KudP0GGm3" // PERBAIKAN: Ganti teks ini dengan link affiliate Shopee Anda
+            },
+            {
+                kode: "6288",
+                foto: "pict/baju02.jpg", 
+                linkShopee: "https://s.shopee.co.id/4ftsEWKjNW"
+            }
+        ];
+
+        const grid = document.getElementById('productGrid');
+
+        function displayProducts(filteredProducts) {
+            grid.innerHTML = "";
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = `<div class="no-results">Kode tidak ditemukan...</div>`;
+                return;
+            }
+            
+            filteredProducts.forEach(prod => {
+                grid.innerHTML += `
+                    <a href="${prod.linkShopee}" target="_blank" class="product-card">
+                        <img src="${prod.foto}" alt="Produk ${prod.kode}" class="product-img">
+                        <div class="product-info">${prod.kode}</div>
+                    </a>
+                `;
+            });
+        }
+
+        displayProducts(products);
+
+        function searchProduct() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            const hasilFilter = products.filter(prod => prod.kode.includes(keyword));
+            displayProducts(hasilFilter);
+        }
+    </script>
+</body>
+</html>
